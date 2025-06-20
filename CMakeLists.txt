@@ -9,6 +9,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(GAMEOFLIFE_BUILD_TESTS "Build unit tests" ON)
 option(GAMEOFLIFE_BUILD_TOOLS "Build tools" ON)
 
+if(GAMEOFLIFE_BUILD_TESTS)
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/v1.17.0.zip
+  ) # Keep update to the latest version.
+
+  # For Windows: Prevent overriding the parent project's compiler/linker settings
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
+
+  enable_testing()
+endif()
+
 set(GAMEOFLIFE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
 include(src/app/app.cmake)
