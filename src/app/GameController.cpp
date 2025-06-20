@@ -1,0 +1,143 @@
+#include "GameController.h"
+#include "GameOfLife.h"
+#include "BoardSerializer.h"
+
+#include <iostream>
+#include <filesystem>
+
+GameController::GameController(int argc, char* argv[]) {
+    m_sProgName = argv[0];
+    for (int i = 1; i < argc; ++i) {
+        m_args.emplace_back(argv[i]);
+    }
+}
+
+int GameController::run() {
+
+    if (!parseArguments()) {
+        printManual();
+        return 1;
+    }
+
+    //Validate arguments
+    if (m_sInputFile.empty()) {
+        std::cerr << "Error: input file can not be empty.\n";
+        printManual();
+        return 1;
+    }
+
+    if (m_nIterations <= 0) {
+        std::cerr << "Error: iterations must be a positive integer.\n";
+        printManual();
+        return 1;
+    }
+
+    //Create game
+    auto upGame = std::unique_ptr<GameOfLife>(new GameOfLife);
+    if (!BoardSerializer::load(m_sInputFile, upGame->aliveCells)) {
+        std::cerr << "Error: Failed to initialize board from file: " << m_sInputFile << std::endl;
+        return 1;
+    }
+
+    std::cout << "---Initial board ----\n";
+    BoardSerializer::print(upGame->aliveCells);
+
+    //Launch game
+    for(int i = 0; i < m_nIterations; ++i) {
+        upGame->nextGeneration();
+        if (m_bPrintAll) {
+            std::cout << "---Generation " << i+1 << "----\n";
+            BoardSerializer::print(upGame->aliveCells);
+        }
+    }
+
+    if (!m_bPrintAll) {
+        std::cout << "---Final state (Generation " << m_nIterations << ")----\n";
+        BoardSerializer::print(upGame->aliveCells);
+    }
+
+    std::string outFilePath = generateOutputFilePath();
+    if (BoardSerializer::save(outFilePath, upGame->aliveCells) ) {
+        std::cout << "Final board state saved to " << outFilePath << std::endl;
+    }
+    else {
+        std::cerr << "Error saving final board state to " << outFilePath << std::endl;
+    }
+
+    return 0; //Succes
+}
+
+bool GameController::parseArguments() {
+    //Parse command line arguments
+
+    if (m_args.empty()) {
+        std::cerr << "Error: --input is mandatory.\n";
+        return false;
+    }
+
+    int nArgs = m_args.size();
+    for (int i = 0; i < nArgs; ++i) {
+
+        auto arg = m_args[i];
+        if ( arg == "--input") {
+
+            if (i + 1 < nArgs) {
+                m_sInputFile = m_args[++i];
+            }
+            else {
+                std::cerr << "Error: --input requires a file path.\n";
+                return false;
+            }
+        }
+
+        else if (arg == "--iterations") {
+
+            if (i + 1 < nArgs) {
+                try {
+                    m_nIterations = std::stoi(m_args[++i]);
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Error: --interations value must be an integer.\n";
+                    return false;
+                } catch (const std::out_of_range& e) {
+                    std::cerr << "Error: --iterations value is out of range.\n";
+                    return false;
+                }
+            }
+            else {
+                std::cerr << "Error: --iterations requires a number.\n";
+                return false;
+            }
+        }
+
+        else if (arg == "--all") {
+            m_bPrintAll = true;
+        }
+
+        else {
+            std::cerr << "Error: Unknown argument '" << arg << "'\n";
+            return false;
+        }
+    }
+    return true;
+}
+
+void GameController::printManual() const {
+    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> --iterations <number> [--all]\n"
+              << "Parameters:\n"
+              << "  --input <filepath>    : Mandatory. Path to the initial board file.\n"
+              << "  --iterations <number> : Mandatory (default 100). A positive integer for the number of iterations.\n"
+              << "  --all                 : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n\n";
+}
+
+std::string GameController::generateOutputFilePath() const {
+
+    std::filesystem::path inputPath(m_sInputFile);
+
+    auto dir = inputPath.parent_path();
+    auto stem = inputPath.stem().string();
+    auto ext = inputPath.extension().string();
+
+    auto newFilename = stem + "_" + std::to_string(m_nIterations) + ext;
+
+    return (dir / newFilename).string();
+}
