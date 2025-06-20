@@ -1,0 +1,61 @@
+name: Create GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      
+jobs:
+  build:
+    name: Build Executables
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DGAMEOFLIFE_BUILD_TESTS=OFF
+        
+      - name: Build Executables
+        run: cmake --build build --config Release
+
+      # Upload to temp artifact storage for 'release' job
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-executables-${{ matrix.os }}
+          path: build/bin
+
+  release:
+    name: Create GitHub Release
+    # Prerequisite : 'build' jobs have succeeded
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all build artifacts # Download from temp artifact storage
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+    
+      - name: Package Release Assets
+        run: |
+          cd artifacts/game-executables-ubuntu-latest && tar -czvf ../../GameOfLife-Linux.tar.gz . && cd ../..
+          cd artifacts/game-executables-macos-latest && tar -czvf ../../GameOfLife-macOS.tar.gz . && cd ../..
+          cd artifacts/game-executables-windows-latest && zip ../../GameOfLife-Windows.zip ./* && cd ../..
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            GameOfLife-Linux.tar.gz
+            GameOfLife-macOS.tar.gz
+            GameOfLife-Windows.zip
