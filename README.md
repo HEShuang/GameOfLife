@@ -3,6 +3,8 @@
 ![CI & Test Status](https://github.com/HEShuang/GameOfLife/actions/workflows/ci.yml/badge.svg)
 ![Latest Release](https://img.shields.io/github/v/release/HEShuang/GameOfLife?include_prereleases)
 
+[Documentation](https://heshuang.github.io/GameOfLife/)
+
 A modern, cross-platform C++ implementation of John Conway's Game of Life, a zero-player cellular automaton where the evolution of the game is determined by its initial state.
 
 For a detailed explanation of the rules, please see the [**Wikipedia article**](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
