@@ -1,5 +1,5 @@
 #include "BoardSerializer.h"
-#include "BBox.h"
+#include "core/BBox.h"
 
 #include <fstream>
 #include <iostream>
@@ -78,24 +78,4 @@ bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& a
         outFile << '\n';
     }
     return true;
-}
-
-void BoardSerializer::print(const std::set<Point>& aliveCells) noexcept {
-    //Find the bounding box of the living cells
-    BBox bbox;
-    bbox.compute(aliveCells);
-    std::cout<< bbox;
-
-    for (int y = bbox.minY; y <= bbox.maxY; ++y) {
-        for (int x = bbox.minX; x <= bbox.maxX; ++x) {
-            if (aliveCells.count({x, y})) {
-                std::cout << '*';
-            }
-            else {
-                std::cout << '_';
-            }
-        }
-        std::cout << '\n';
-    }
-    std::cout << std::endl;
 }

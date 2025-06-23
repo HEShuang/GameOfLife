@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <set>
-#include "BBox.h"
-#include "Point.h"
+#include "core/BBox.h"
+#include "core/Point.h"
 
 TEST(BBoxTest, ComputesCorrectBounds) {
     std::set<Point> cells = {{1, 2}, {-3, 5}, {10, -1}};

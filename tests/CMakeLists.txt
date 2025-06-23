@@ -8,8 +8,7 @@ add_executable(runTests
 )
 
 target_include_directories(runTests PRIVATE
-  ${GAMEOFLIFE_SOURCE_DIR}/core
-  ${GAMEOFLIFE_SOURCE_DIR}/io
+  ${PROJECT_SOURCE_DIR}/src
 )
 
 target_link_libraries(runTests PRIVATE

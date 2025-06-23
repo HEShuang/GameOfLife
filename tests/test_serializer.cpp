@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "BoardSerializer.h"
-#include "Point.h"
+#include "io/BoardSerializer.h"
+#include "core/Point.h"
 #include <set>
 #include <fstream>
 #include <string>

@@ -1,14 +1,13 @@
-add_executable(generator_board
+add_executable(generateBoard
     ${CORE_SOURCES}
     ${IO_SOURCES}
-    generate_board.cpp
+    main.cpp
 )
 
-target_include_directories(generator_board PRIVATE
-  ${GAMEOFLIFE_SOURCE_DIR}/core
-  ${GAMEOFLIFE_SOURCE_DIR}/io
+target_include_directories(generateBoard PRIVATE
+  ${PROJECT_SOURCE_DIR}/src
 )
 
-install(TARGETS generator_board
+install(TARGETS generateBoard
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )

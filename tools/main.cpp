@@ -1,5 +1,5 @@
-#include "BoardGenerator.h"
-#include "BBox.h"
+#include "io/BoardGenerator.h"
+#include "core/BBox.h"
 
 #include <iostream>
 #include <cstring>
@@ -7,8 +7,8 @@
 void printManual(const char* progName) {
     std::cerr << "\nUsage: " << progName << " --output <filepath> --size <row col> \n"
               << "Parameters:\n"
-              << "  --output <filepath>   : Mandatory. Path to the generated board file.\n"
-              << "  --size <number number>: Mandatory (default 20 20). Two positive integers for row and colomn.\n\n";
+              << "  --output <filepath>   : Required. Path to the generated board file.\n"
+              << "  --size <number number>: Default 20 20. Two positive integers for row and colomn.\n\n";
 }
 
 bool parseArguments(int argc, char* argv[], int& row, int& col, std::string& outFile) {

@@ -1,6 +1,6 @@
 #include "GameController.h"
-#include "GameOfLife.h"
-#include "BoardSerializer.h"
+#include "core/GameOfLife.h"
+#include "io/BoardSerializer.h"
 
 #include <iostream>
 #include <filesystem>

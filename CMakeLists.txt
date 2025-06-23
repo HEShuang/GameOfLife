@@ -36,7 +36,6 @@ if(GAMEOFLIFE_BUILD_TESTS)
   enable_testing()
 endif()
 
-set(GAMEOFLIFE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
 include(src/app/app.cmake)
 include(src/core/core.cmake)
@@ -48,9 +47,8 @@ add_executable(GameOfLife
     ${APP_SOURCES}
 )
 
-target_include_directories(GameOfLife PRIVATE 
-    ${GAMEOFLIFE_SOURCE_DIR}/core
-    ${GAMEOFLIFE_SOURCE_DIR}/io
+target_include_directories(GameOfLife PRIVATE
+    ${PROJECT_SOURCE_DIR}/src
 )
 
 include(GNUInstallDirs)

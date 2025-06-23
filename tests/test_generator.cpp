@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include "BoardGenerator.h"
-#include "BoardSerializer.h"
-#include "BBox.h"
-#include "Point.h"
+#include "io/BoardGenerator.h"
+#include "io/BoardSerializer.h"
+#include "core/BBox.h"
+#include "core/Point.h"
 
 #include <fstream>
 #include <string>
