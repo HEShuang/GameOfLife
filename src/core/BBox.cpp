@@ -16,6 +16,8 @@ void BBox::compute(const std::set<Point>& points) {
         minY = std::min(minY, point.y);
         maxY = std::max(maxY, point.y);
     }
+
+    center = {minX + (maxX - minX) / 2, minY + (maxY - minY) / 2};
 }
 
 std::ostream& operator<<(std::ostream& os, const BBox& bbox) {

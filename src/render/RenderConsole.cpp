@@ -42,14 +42,10 @@ void RenderConsole::initView(const std::unique_ptr<GameOfLife>& upGame) {
     BBox bbox;
     bbox.compute(aliveCells);
 
-    // Calculate the center of the pattern
-    int cx = bbox.minX + (bbox.maxX - bbox.minX) / 2;
-    int cy = bbox.minY + (bbox.maxY - bbox.minY) / 2;
-
     // Define the viewport boundaries centered around the pattern
-    m_viewBox.minX = cx - (width / 2);
+    m_viewBox.minX = bbox.center.x - (width / 2);
     m_viewBox.maxX = m_viewBox.minX + width - 1;
-    m_viewBox.minY = cy - (height / 2);
+    m_viewBox.minY = bbox.center.y - (height / 2);
     m_viewBox.maxY = m_viewBox.minY + height - 1;
 }
 
@@ -60,7 +56,6 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
     std::string frame_buffer;
     frame_buffer.reserve((m_viewBox.maxX - m_viewBox.minX + 1) * (m_viewBox.maxY - m_viewBox.minY + 1));
 
-    // Use the stored member variables for the loop boundaries
     for (int y = m_viewBox.minY; y <= m_viewBox.maxY; ++y) {
         for (int x = m_viewBox.minX; x <= m_viewBox.maxX; ++x) {
             if (aliveCells.count({x, y})) {
