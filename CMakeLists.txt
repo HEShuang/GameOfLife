@@ -36,14 +36,15 @@ if(GAMEOFLIFE_BUILD_TESTS)
   enable_testing()
 endif()
 
-
 include(src/app/app.cmake)
 include(src/core/core.cmake)
 include(src/io/io.cmake)
+include(src/render/render.cmake)
 
 add_executable(GameOfLife 
     ${CORE_SOURCES}
     ${IO_SOURCES}
+    ${RENDER_SOURCES}
     ${APP_SOURCES}
 )
 
