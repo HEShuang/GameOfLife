@@ -1,0 +1,48 @@
+name: Generate Doxygen Documentation
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+# Grant the necessary permissions for the workflow to deploy to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Check out repository's code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Doxygen and Graphviz (for diagrams)
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      # Step 3: Generate Doxyfile
+      - name: Generate Doxygen Documentation
+        run: doxygen Doxyfile
+
+      # Step 4: Configure GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Step 5: Upload the generated HTML documentation as an artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # This is the directory Doxygen was configured to output to
+          path: './docs/html'
+
+      # Step 6: Deploy the artifact to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

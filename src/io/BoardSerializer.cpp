@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCells) {
+bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCells) noexcept {
 
     std::ifstream inFile(sInFile);
     if (!inFile.is_open()) {
