@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "GameOfLife.h"
-#include "Point.h"
+#include "core/GameOfLife.h"
+#include "core/Point.h"
 
 class GameTest: public ::testing::Test {
 protected:

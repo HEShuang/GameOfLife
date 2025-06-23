@@ -1,8 +1,8 @@
 #include "BoardGenerator.h"
 
 #include "BoardSerializer.h"
-#include "BBox.h"
-#include "Point.h"
+#include "core/BBox.h"
+#include "core/Point.h"
 
 #include <random>
 #include <set>

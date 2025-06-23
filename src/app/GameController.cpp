@@ -1,11 +1,15 @@
 #include "GameController.h"
-#include "GameOfLife.h"
-#include "BoardSerializer.h"
+#include "core/GameOfLife.h"
+#include "io/BoardSerializer.h"
 
 #include <iostream>
 #include <filesystem>
+#include <chrono>
+#include <thread>
 
-GameController::GameController(int argc, char* argv[]) {
+GameController::GameController(int argc, char* argv[], std::unique_ptr<RenderInterface> renderer) :
+    m_renderer(std::move(renderer))
+{
     m_sProgName = argv[0];
     for (int i = 1; i < argc; ++i) {
         m_args.emplace_back(argv[i]);
@@ -39,21 +43,30 @@ int GameController::run() {
         return 1;
     }
 
-    std::cout << "---Initial board ----\n";
-    BoardSerializer::print(upGame->aliveCells);
+    //Init render view based on terminal size
+    m_renderer->initView(upGame);
+
+    if (m_bPrintAll) {
+        m_renderer->clear();
+        std::cout << "--- Inital board ---\n";
+        m_renderer->render(upGame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
+    }
 
     //Launch game
     for(int i = 0; i < m_nIterations; ++i) {
         upGame->nextGeneration();
         if (m_bPrintAll) {
+            m_renderer->clear();
             std::cout << "---Generation " << i+1 << "----\n";
-            BoardSerializer::print(upGame->aliveCells);
+            m_renderer->render(upGame);
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
         }
     }
 
     if (!m_bPrintAll) {
         std::cout << "---Final state (Generation " << m_nIterations << ")----\n";
-        BoardSerializer::print(upGame->aliveCells);
+        m_renderer->render(upGame);
     }
 
     std::string outFilePath = generateOutputFilePath();
@@ -125,7 +138,7 @@ void GameController::printManual() const {
     std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> --iterations <number> [--all]\n"
               << "Parameters:\n"
               << "  --input <filepath>    : Mandatory. Path to the initial board file.\n"
-              << "  --iterations <number> : Mandatory (default 100). A positive integer for the number of iterations.\n"
+              << "  --iterations <number> : Default 100. A positive integer for the number of iterations.\n"
               << "  --all                 : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n\n";
 }
 

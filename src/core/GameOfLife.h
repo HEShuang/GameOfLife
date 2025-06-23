@@ -12,6 +12,10 @@ class GameOfLife
     friend class GameController;
     friend class GameTest;
 
+public:
+    inline const std::set<Point>& getAliveCells() const noexcept { return aliveCells; }
+
+private:
     void nextGeneration();
 
     std::set<Point> aliveCells;

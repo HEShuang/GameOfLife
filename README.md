@@ -65,12 +65,12 @@ This will run 300 simulations and save the final state to file initial_random20x
 * --iterations <number>: (Default: 100) The number of generations to simulate.
 * --all: (Optional) If present, prints every generation to the console.
 
-### `generator_board`
+### `generateBoard`
 This utility creates a text file with a random pattern, which can be used as an input for the main application.
 
 **Syntax:**
 ```bash
-generate_board <width> <height> <output_file> [live_chance]
+generateBoard <width> <height> <output_file> [live_chance]
 ```
 **Example:**
 ```bash
@@ -78,7 +78,7 @@ generate_board <width> <height> <output_file> [live_chance]
 ```
 * width, height: The dimensions of the random board.
 * output_file: The file to save the board to.
-* live_chance: (Optional) A probability from 0.0 to 1.0 for a cell to be alive. Default is 0.25.
+* live_chance: (Optional) A probability from 0.0 to 1.0 for a cell to be alive. Default is 0.5.
 
 
 ## 4. Advanced Building & Testing
