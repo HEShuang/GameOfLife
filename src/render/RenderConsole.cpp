@@ -56,7 +56,7 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
     bbox.compute(aliveCells);
     int w = bbox.maxX - bbox.minX + 1;
     int h = bbox.maxY - bbox.minY + 1;
-    m_outStream << "Population:" << aliveCells.size() << " Territory:" << w << "x" << h << std::endl;
+    m_outStream << "Population:" << aliveCells.size() << " Territory:" << w << "x" << h << "\n\n";
 
     std::string frame_buffer;
     frame_buffer.reserve((m_viewBox.maxX - m_viewBox.minX + 1) * (m_viewBox.maxY - m_viewBox.minY + 1));

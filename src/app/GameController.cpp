@@ -79,7 +79,7 @@ int GameController::run() {
         return 1;
     }
 
-    std::cout << "Total time: " << duration.count();
+    std::cout << "Total time: " << duration.count() << " ms" << std::endl;
     return 0; //Succes
 }
 
