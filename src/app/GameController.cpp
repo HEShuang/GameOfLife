@@ -108,8 +108,12 @@ bool GameController::parseArguments() {
             if (i + 1 < nArgs) {
                 try {
                     m_nIterations = std::stoi(m_args[++i]);
+                    if (m_nIterations <= 0) {
+                        std::cerr << "Error: --iterations value must > 0.\n";
+                        return false;
+                    }
                 } catch (const std::invalid_argument& e) {
-                    std::cerr << "Error: --interations value must be an integer.\n";
+                    std::cerr << "Error: --iterations value must be an integer.\n";
                     return false;
                 } catch (const std::out_of_range& e) {
                     std::cerr << "Error: --iterations value is out of range.\n";
@@ -126,6 +130,29 @@ bool GameController::parseArguments() {
             m_bPrintAll = true;
         }
 
+        else if (arg == "--sleep") {
+
+            if (i + 1 < nArgs) {
+                try {
+                    m_msSleep = std::stoi(m_args[++i]);
+                    if (m_msSleep < 0) {
+                        std::cerr << "Error: --sleep value must >= 0.\n";
+                        return false;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Error: --sleep value must be an integer.\n";
+                    return false;
+                } catch (const std::out_of_range& e) {
+                    std::cerr << "Error: --sleep value is out of range.\n";
+                    return false;
+                }
+            }
+            else {
+                std::cerr << "Error: --sleep requires a number.\n";
+                return false;
+            }
+        }
+
         else {
             std::cerr << "Error: Unknown argument '" << arg << "'\n";
             return false;
@@ -139,7 +166,9 @@ void GameController::printManual() const {
               << "Parameters:\n"
               << "  --input <filepath>    : Mandatory. Path to the initial board file.\n"
               << "  --iterations <number> : Default 100. A positive integer for the number of iterations.\n"
-              << "  --all                 : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n\n";
+              << "  --all                 : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n"
+              << "  --sleep               : Default 0. A positive integer in millisecond for sleep time between print of two generation\n\n";
+
 }
 
 std::string GameController::generateOutputFilePath() const {
