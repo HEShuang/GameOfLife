@@ -36,6 +36,7 @@ public:
      * --input : (Required) Path to a board file. The format should use * for live cells and _ for dead cells.
      * --iterations : (Default: 100) The number of generations to simulate.
      * --all: (Optional) If present, render every generation state to the console.
+     * --sleep: (Optional, default: 0) The sleep time between rendering two generations, for controlling animation speed.
      *
      * @param renderer A unique_ptr to a renderer implementation. Defaults to RenderConsole.
      */
@@ -60,7 +61,7 @@ private:
     int m_nIterations = 100;
     bool m_bPrintAll = false;
     std::unique_ptr<RenderInterface> m_renderer = nullptr;
-    int m_msSleep = 100; //sleep time between each render in milliseconds
+    int m_msSleep = 0; //sleep time between each render in milliseconds
 };
 
 #endif // GAMECONTROLLER_H

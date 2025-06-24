@@ -47,6 +47,8 @@ private:
     void nextGeneration();
 
     std::set<Point> aliveCells;
+
+    static const size_t MAX_ALIVE_CELLS = 5000000;
 };
 
 #endif // GAMEOFLIFE_H

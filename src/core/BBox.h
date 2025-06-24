@@ -23,14 +23,16 @@ struct BBox {
     int maxX = 0; //right edge
     int maxY = 0; //bottom edge
     Point center = {0,0}; //center
+    int width = 0;
+    int height = 0;
 
-    BBox() {}
+    BBox() = default;
     /**
      * @brief Constructs a BBox from two Points.
      * @param min The Point defining the top-left corner.
      * @param max The Point defining the bottom-right corner.
      */
-    BBox(Point&& min, Point&& max) : minX(min.x), minY(min.y), maxX(max.x), maxY(max.y) {}
+    BBox(Point&& min, Point&& max);
 
     /**
      * @brief Computes the minimal bounding box that encloses a set of points.

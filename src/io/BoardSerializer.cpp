@@ -3,8 +3,9 @@
 
 #include <fstream>
 #include <iostream>
+#include <map>
 
-bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCells) noexcept {
+bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCells) {
 
     std::ifstream inFile(sInFile);
     if (!inFile.is_open()) {
@@ -15,11 +16,15 @@ bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCel
     aliveCells.clear();
 
     std::string line;
-    auto expectedLength = -1ll;
+    size_t expectedLength = -1;
 
     //The top-left of the file is the origin (0,0)
     int y = 0;
     while (std::getline(inFile, line)) {
+
+        //comment
+        if (line.front() == '#')
+            continue;
 
         //Validate each line has the same length
         if (expectedLength == -1) {
@@ -49,22 +54,73 @@ bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCel
     return true;
 }
 
-bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& aliveCells) noexcept {
+bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& aliveCells) {
 
-    std::ofstream outFile(sOutFile);
+    if (aliveCells.empty()) {
+        std::ofstream outFile(sOutFile);
+        return outFile.good();
+    }
 
-    if (!outFile.is_open()) {
-        std::cerr << "Error: could not open file for writing: " << sOutFile << std::endl;
+    try {
+        BBox bbox;
+        bbox.compute(aliveCells);
+
+        if (bbox.width <= MAX_DIMENSION && bbox.height <= MAX_DIMENSION) {
+            std::cout << "Pattern is small. Saving to a single dense file: " << sOutFile << std::endl;
+            return saveDense(sOutFile, aliveCells, bbox);
+        }
+        else {
+            std::cout << "Pattern is large/dispersed. Saving in 3 formats." << std::endl;
+
+            // Generate derived filenames by inserting suffixes before the extension.
+            std::string baseName = sOutFile;
+            std::string extension = "";
+            size_t dotPos = sOutFile.find_last_of('.');
+            if (dotPos != std::string::npos) {
+                baseName = sOutFile.substr(0, dotPos);
+                extension = sOutFile.substr(dotPos);
+            }
+
+            const std::string sparseFile = baseName + "_sparse" + extension;
+            const std::string centerFile = baseName + "_center" + extension;
+
+            // File 1 : Save the sparse file (coordinate dump)
+            std::cout << "Saving sparse coordinate list to: " << sparseFile << std::endl;
+            if (!saveSparse(sparseFile, aliveCells))
+                return false;
+
+            // File 2 : Save the centered viewport
+            std::cout << "Saving centered viewport to: " << centerFile << std::endl;
+            Point center = findDensestRegionCenter(aliveCells);
+            BBox centerBox = {
+                { center.x - VIEWPORT_WIDTH / 2, center.y - VIEWPORT_HEIGHT / 2 },
+                { center.x + VIEWPORT_WIDTH / 2, center.y + VIEWPORT_HEIGHT / 2 }
+            };
+            if (!saveDense(centerFile, aliveCells, centerBox))
+                return false;
+
+            // File 3 : Save the original, full (and huge) dense file
+            std::cout << "Saving full file to: " << sOutFile << std::endl;
+            if (!saveDense(sOutFile, aliveCells, bbox))
+                return false;
+
+            return true;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "An error occurred during save: " << e.what() << std::endl;
         return false;
     }
 
-    //Empty board, empty file
-    if (aliveCells.empty())
-        return true;
+}
 
-    //Find the bounding box of the living cells
-    BBox bbox;
-    bbox.compute(aliveCells);
+// --- Private  ---
+
+bool BoardSerializer::saveDense(const std::string& sOutFile, const std::set<Point>& aliveCells, const BBox& bbox) {
+    std::ofstream outFile(sOutFile);
+    if (!outFile) {
+        std::cerr << "Error: Could not open file for writing: " << sOutFile << std::endl;
+        return false;
+    }
 
     for (int y = bbox.minY; y <= bbox.maxY; ++y) {
         for (int x = bbox.minX; x <= bbox.maxX; ++x) {
@@ -77,5 +133,55 @@ bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& a
         }
         outFile << '\n';
     }
-    return true;
+    return outFile.good();
+}
+
+bool BoardSerializer::saveSparse(const std::string& sOutFile, const std::set<Point>& aliveCells) {
+    std::ofstream outFile(sOutFile);
+    if (!outFile) {
+        std::cerr << "Error: Could not open file for writing: " << sOutFile << std::endl;
+        return false;
+    }
+    // Simple header
+    outFile << "# Sparse coordinate list (x,y) : " << aliveCells.size() << "\n";
+    for (const auto& p : aliveCells) {
+        outFile << p.x << "," << p.y << "\n";
+    }
+    return outFile.good();
+}
+
+//Grid binning to find the densest region center
+Point BoardSerializer::findDensestRegionCenter(const std::set<Point>& aliveCells) {
+    if (aliveCells.empty()) {
+        return {0, 0};
+    }
+
+    // use half the viewport width as grid size.
+    const int GRID_SIZE = VIEWPORT_WIDTH / 2;
+
+    std::map<Point, int> gridCounts;
+
+    // 1. Bin all live cells and count them
+    for (const auto& cell : aliveCells) {
+        int gridX = cell.x / GRID_SIZE;
+        int gridY = cell.y / GRID_SIZE;
+        gridCounts[{gridX, gridY}]++;
+    }
+
+    // 2. Find the grid bin with the most cells
+    Point densestGridCoord = gridCounts.begin()->first;
+    int maxCount = 0;
+
+    for (const auto& pair : gridCounts) {
+        if (pair.second > maxCount) {
+            maxCount = pair.second;
+            densestGridCoord = pair.first;
+        }
+    }
+
+    // 3. Return the center of the densest grid bin
+    int centerX = (densestGridCoord.x * GRID_SIZE) + (GRID_SIZE / 2);
+    int centerY = (densestGridCoord.y * GRID_SIZE) + (GRID_SIZE / 2);
+
+    return {centerX, centerY};
 }

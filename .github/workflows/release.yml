@@ -19,8 +19,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DGAMEOFLIFE_BUILD_TESTS=OFF
+        if: matrix.os != 'macos-latest'
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DGAMEOFLIFE_BUILD_TESTS=OFF -DGAMEOFLIFE_BUILD_TOOLS=OFF
         
+      - name: Configure CMake for macOS Universal Binary
+        if: matrix.os == 'macos-latest'
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DGAMEOFLIFE_BUILD_TESTS=OFF
+          -DGAMEOFLIFE_BUILD_TOOLS=OFF
+          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
       - name: Build Executables
         run: cmake --build build --config Release
 
@@ -41,13 +51,29 @@ jobs:
       contents: write
 
     steps:
+      # Checkout code to access README.md and samples folder
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Download all build artifacts # Download from temp artifact storage
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-    
+      
+      # Copy samples and README file then create archives
       - name: Package Release Assets
         run: |
+          echo "Copying common files..."
+          cp -r samples artifacts/game-executables-ubuntu-latest/
+          cp README.md artifacts/game-executables-ubuntu-latest/
+
+          cp -r samples artifacts/game-executables-macos-latest/
+          cp README.md artifacts/game-executables-macos-latest/
+
+          cp -r samples artifacts/game-executables-windows-latest/
+          cp README.md artifacts/game-executables-windows-latest/
+          
+          echo "Creating archives..."
           cd artifacts/game-executables-ubuntu-latest && tar -czvf ../../GameOfLife-Linux.tar.gz . && cd ../..
           cd artifacts/game-executables-macos-latest && tar -czvf ../../GameOfLife-macOS.tar.gz . && cd ../..
           cd artifacts/game-executables-windows-latest && zip ../../GameOfLife-Windows.zip ./* && cd ../..
