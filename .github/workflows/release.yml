@@ -76,7 +76,7 @@ jobs:
           echo "Creating archives..."
           cd artifacts/game-executables-ubuntu-latest && tar -czvf ../../GameOfLife-Linux.tar.gz . && cd ../..
           cd artifacts/game-executables-macos-latest && tar -czvf ../../GameOfLife-macOS.tar.gz . && cd ../..
-          cd artifacts/game-executables-windows-latest && zip ../../GameOfLife-Windows.zip ./* && cd ../..
+          cd artifacts/game-executables-windows-latest && zip -r ../../GameOfLife-Windows.zip . && cd ../..
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
