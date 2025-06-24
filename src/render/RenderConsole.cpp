@@ -47,6 +47,8 @@ void RenderConsole::initView(const std::unique_ptr<GameOfLife>& upGame) {
     m_viewBox.maxX = m_viewBox.minX + width - 1;
     m_viewBox.minY = bbox.center.y - (height / 2);
     m_viewBox.maxY = m_viewBox.minY + height - 1;
+
+    std::cout << "\033[2J" << std::flush;
 }
 
 void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
@@ -76,6 +78,6 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
 
 
 void RenderConsole::clear() {
-    // \033[2J clears the screen, \033[H moves the cursor to the top-left.
-    std::cout << "\033[2J\033[H" << std::flush;
+    //\033[H moves the cursor to the top-left.
+    std::cout << "\033[H" << std::flush;
 }
