@@ -21,13 +21,13 @@ void RenderConsole::initView(const std::unique_ptr<GameOfLife>& upGame) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+    height = csbi.srWindow.Bottom - csbi.srWindow.Top - 10;
 #else
     // This uses the POSIX API (ioctl), which works on Linux and macOS.
     struct winsize size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     width = size.ws_col;
-    height = size.ws_row - 4;// Use a slightly smaller height to leave room for prompts
+    height = size.ws_row - 10;// Use a smaller height to leave room for prompts
 #endif
 
     const auto& aliveCells = upGame->getAliveCells();
@@ -52,6 +52,11 @@ void RenderConsole::initView(const std::unique_ptr<GameOfLife>& upGame) {
 void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
 
     const auto& aliveCells = upGame->getAliveCells();
+    BBox bbox;
+    bbox.compute(aliveCells);
+    int w = bbox.maxX - bbox.minX + 1;
+    int h = bbox.maxY - bbox.minY + 1;
+    m_outStream << "Population:" << aliveCells.size() << " Territory:" << w << "x" << h << std::endl;
 
     std::string frame_buffer;
     frame_buffer.reserve((m_viewBox.maxX - m_viewBox.minX + 1) * (m_viewBox.maxY - m_viewBox.minY + 1));
@@ -71,20 +76,6 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
 
 
 void RenderConsole::clear() {
-#ifdef _WIN32
-    // A more advanced Windows-specific method that reduces flicker.
-    // It gets the console handle and fills the screen with spaces.
-    HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD coord = {0, 0};
-    DWORD count;
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(hStdOut, &csbi);
-    FillConsoleOutputCharacter(hStdOut, (TCHAR)' ', csbi.dwSize.X * csbi.dwSize.Y, coord, &count);
-    SetConsoleCursorPosition(hStdOut, coord);
-#else
-    // for Linux/macOS using ANSI escape codes.
     // \033[2J clears the screen, \033[H moves the cursor to the top-left.
     std::cout << "\033[2J\033[H" << std::flush;
-#endif
-
 }
