@@ -53,6 +53,8 @@ int GameController::run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
     }
 
+    //Start profiling
+    auto startTime = std::chrono::high_resolution_clock::now();
     //Launch game
     for(int i = 0; i < m_nIterations; ++i) {
         upGame->nextGeneration();
@@ -63,6 +65,8 @@ int GameController::run() {
             std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
         }
     }
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
     if (!m_bPrintAll) {
         std::cout << "---Final state (Generation " << m_nIterations << ")----\n";
@@ -70,13 +74,12 @@ int GameController::run() {
     }
 
     std::string outFilePath = generateOutputFilePath();
-    if (BoardSerializer::save(outFilePath, upGame->aliveCells) ) {
-        std::cout << "Final board state saved to " << outFilePath << std::endl;
-    }
-    else {
+    if (!BoardSerializer::save(outFilePath, upGame->aliveCells) ) {
         std::cerr << "Error saving final board state to " << outFilePath << std::endl;
+        return 1;
     }
 
+    std::cout << "Total time: " << duration.count();
     return 0; //Succes
 }
 
