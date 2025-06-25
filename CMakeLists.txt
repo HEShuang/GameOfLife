@@ -21,6 +21,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${EXECUTABLE_OUTPUT_PATH})
 # --- BUILD Options---
 option(GAMEOFLIFE_BUILD_TESTS "Build unit tests" ON)
 option(GAMEOFLIFE_BUILD_TOOLS "Build tools" ON)
+option(GAMEOFLIFE_BUILD_BENCHMARK "Build benchmark" ON)
 
 if(GAMEOFLIFE_BUILD_TESTS)
   include(FetchContent)
@@ -66,6 +67,8 @@ if(GAMEOFLIFE_BUILD_TOOLS)
   add_subdirectory(tools)
 endif()
 
-
+if(GAMEOFLIFE_BUILD_BENCHMARK)
+  add_subdirectory(benchmark)
+endif()
 
 

@@ -15,6 +15,8 @@
 #include <string>
 #include <set>
 
+class BenchMark;
+
 /**
  * @class BoardSerializer
  * @brief Provides static methods for loading and saving the board state.
@@ -24,6 +26,7 @@
  */
 class BoardSerializer
 {
+    friend class BenchMark;
 public:
     /**
      * @brief Loads a board state from a text file.
