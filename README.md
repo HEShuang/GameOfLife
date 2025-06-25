@@ -9,6 +9,9 @@ A modern, cross-platform C++ implementation of John Conway's Game of Life, a zer
 
 For a detailed explanation of the rules, please see the [**Wikipedia article**](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
+![demo](https://github.com/user-attachments/assets/5d158217-f2ad-4ed1-8cc5-9124294d0658)
+
+
 ## Features
 
 * **Cross-Platform:** Compiles and runs on Windows, macOS, and Linux.
