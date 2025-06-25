@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <iomanip>    // For std::setprecision
+#include <algorithm>  // For std::transform
 
 bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCells) {
 
