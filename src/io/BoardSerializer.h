@@ -39,8 +39,8 @@ public:
     /**
      * @brief Saves the board state with a smart strategy based on pattern size.
      *
-     * If the pattern's bounding box is smaller than MAX_DIMENSION, saves a single dense file ('*' for alive, '_' for dead).
-     * If larger, it saves two more files: a sparse coordinate list and a centered viewport,
+     * If the pattern's bounding box < MAX_DIMENSION, saves a single dense file ('*' for alive, '_' for dead).
+     * If >= MAX_DIMENSION, saves 1) a sparse coordinate list, 2) a centered viewport, 3) ask user if to save a full dense file
      *
      * @param sOutFile The base path for the output file(s).
      * @param aliveCells The set of live cell coordinates to save.
@@ -50,7 +50,7 @@ public:
 
 private:
     // --- Constants for the save strategy ---
-    static const int MAX_DIMENSION = 1000; // Max width or height for a "small" board
+    static const int MAX_DIMENSION = 1000; // Max dimension for a 'small' board
     static const int VIEWPORT_WIDTH = 200; // Width of the centered viewport
     static const int VIEWPORT_HEIGHT = 100; // Height of the centered viewport
 

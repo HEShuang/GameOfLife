@@ -65,12 +65,12 @@ bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& a
         BBox bbox;
         bbox.compute(aliveCells);
 
-        if (bbox.width <= MAX_DIMENSION && bbox.height <= MAX_DIMENSION) {
+        if (bbox.width < MAX_DIMENSION && bbox.height < MAX_DIMENSION) {
             std::cout << "Pattern is small. Saving to a single dense file: " << sOutFile << std::endl;
             return saveDense(sOutFile, aliveCells, bbox);
         }
         else {
-            std::cout << "Pattern is large/dispersed. Saving in 3 formats." << std::endl;
+            std::cout << "Pattern is large. Saving in different formats:" << std::endl;
 
             // Generate derived filenames by inserting suffixes before the extension.
             std::string baseName = sOutFile;
@@ -99,10 +99,28 @@ bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& a
             if (!saveDense(centerFile, aliveCells, centerBox))
                 return false;
 
-            // File 3 : Save the original, full (and huge) dense file
-            std::cout << "Saving full file to: " << sOutFile << std::endl;
-            if (!saveDense(sOutFile, aliveCells, bbox))
-                return false;
+            // Calculate estimated file size to inform the user
+            long long estimated_size_bytes = static_cast<long long>(bbox.width) * bbox.height;
+            double estimated_size_mb = static_cast<double>(estimated_size_bytes) / (1024.0 * 1024.0);
+
+            // Warn the user and ask for confirmation
+            std::cout << "\nWARNING: The full dense file will be very large." << std::endl;
+            std::cout << "  - Dimensions: " << bbox.width << "x" << bbox.height << std::endl;
+            std::cout << "  - Estimated size: " << std::fixed << std::setprecision(2) << estimated_size_mb << " MB" << std::endl;
+            std::cout << "Do you want to proceed with saving this file? (y/n): ";
+
+            std::string userInput;
+            std::cin >> userInput;
+            std::transform(userInput.begin(), userInput.end(), userInput.begin(), ::tolower);
+
+            if (userInput == "y" || userInput == "yes") {
+                std::cout << "User confirmed. Saving full dense file..." << std::endl;
+                if (!saveDense(sOutFile, aliveCells, bbox)) {
+                    return false; // The full save failed
+                }
+            } else {
+                std::cout << "Save of full dense file aborted by user." << std::endl;
+            }
 
             return true;
         }
