@@ -1,6 +1,11 @@
 #include "GameOfLife.h"
+#include "Exceptions.h"
 
 void GameOfLife::nextGeneration() {
+
+    if (aliveCells.size() > MAX_ALIVE_CELLS) {
+        throw CapacityException("Maximum cell capacity exceeded.");
+    }
 
     //Count living neighbors of the given cell by iterating the 3x3 grid around
     auto countLiveNeighbors = [this](const Point& p) -> int{

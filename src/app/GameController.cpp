@@ -56,15 +56,21 @@ int GameController::run() {
     //Start profiling
     auto startTime = std::chrono::high_resolution_clock::now();
     //Launch game
-    for(int i = 0; i < m_nIterations; ++i) {
-        upGame->nextGeneration();
-        if (m_bPrintAll) {
-            m_renderer->clear();
-            std::cout << "---Generation " << i+1 << "----\n";
-            m_renderer->render(upGame);
-            std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
+    try {
+        for(int i = 0; i < m_nIterations; ++i) {
+            upGame->nextGeneration();
+            if (m_bPrintAll) {
+                m_renderer->clear();
+                std::cout << "---Generation " << i+1 << "----\n";
+                m_renderer->render(upGame);
+                std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
+            }
         }
+    } catch (std::exception& e) {
+        std::cout << "Error during generation" << e.what() << std::endl;
+        return 1;
     }
+
     auto endTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
@@ -79,7 +85,7 @@ int GameController::run() {
         return 1;
     }
 
-    std::cout << "Total time: " << duration.count() << " ms" << std::endl;
+    std::cout << "Total game time: " << duration.count() << " ms" << std::endl;
     return 0; //Succes
 }
 
@@ -165,7 +171,7 @@ bool GameController::parseArguments() {
 }
 
 void GameController::printManual() const {
-    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> --iterations <number> [--all]\n"
+    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> [--iterations <number>] [--all] [--sleep <time>] \n"
               << "Parameters:\n"
               << "  --input <filepath>    : Mandatory. Path to the initial board file.\n"
               << "  --iterations <number> : Default 100. A positive integer for the number of iterations.\n"
