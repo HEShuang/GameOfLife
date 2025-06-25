@@ -47,6 +47,8 @@ void RenderConsole::initView(const std::unique_ptr<GameOfLife>& upGame) {
     m_viewBox.maxX = m_viewBox.minX + width - 1;
     m_viewBox.minY = bbox.center.y - (height / 2);
     m_viewBox.maxY = m_viewBox.minY + height - 1;
+
+    std::cout << "\033[2J" << std::flush;
 }
 
 void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
@@ -54,9 +56,7 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
     const auto& aliveCells = upGame->getAliveCells();
     BBox bbox;
     bbox.compute(aliveCells);
-    int w = bbox.maxX - bbox.minX + 1;
-    int h = bbox.maxY - bbox.minY + 1;
-    m_outStream << "Population:" << aliveCells.size() << " Territory:" << w << "x" << h << std::endl;
+    m_outStream << "Population:" << aliveCells.size() << " Territory:" << bbox.width << "x" << bbox.height << "\n\n";
 
     std::string frame_buffer;
     frame_buffer.reserve((m_viewBox.maxX - m_viewBox.minX + 1) * (m_viewBox.maxY - m_viewBox.minY + 1));
@@ -76,6 +76,6 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
 
 
 void RenderConsole::clear() {
-    // \033[2J clears the screen, \033[H moves the cursor to the top-left.
-    std::cout << "\033[2J\033[H" << std::flush;
+    //\033[H moves the cursor to the top-left.
+    std::cout << "\033[H" << std::flush;
 }

@@ -17,6 +17,7 @@
 
 class GameController;
 class GameTest;
+class GameBenchmark;
 
 /**
  * @class GameOfLife
@@ -29,6 +30,7 @@ class GameOfLife
 {
     friend class GameController;
     friend class GameTest;
+    friend class GameBenchmark;
 
 public:
     /**
@@ -48,7 +50,7 @@ private:
 
     std::set<Point> aliveCells;
 
-    static const size_t MAX_ALIVE_CELLS = 5000000;
+    static inline size_t MAX_ALIVE_CELLS = 2'000'000;
 };
 
 #endif // GAMEOFLIFE_H

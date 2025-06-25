@@ -32,7 +32,7 @@ public:
      * @param argc The argument count from main().
      * @param argv The argument vector from main().
      *
-     * Syntax : --input <filepath> --iterations <number> [--all]
+     * Syntax : --input <filepath> [--iterations <number>] [--all] [--sleep <time> ]
      * --input : (Required) Path to a board file. The format should use * for live cells and _ for dead cells.
      * --iterations : (Default: 100) The number of generations to simulate.
      * --all: (Optional) If present, render every generation state to the console.
