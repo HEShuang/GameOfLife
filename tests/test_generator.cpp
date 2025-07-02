@@ -54,7 +54,7 @@ TEST(BoardGeneratorTest, GeneratedFileIsValidAndHasCorrectDimensions) {
     ASSERT_TRUE(BoardGenerator::generateRandom(file, bbox, 0.5f));
 
     // Check if the file can be loaded by the serializer without errors
-    std::set<Point> loaded_cells;
+    std::unordered_set<Point> loaded_cells;
     ASSERT_TRUE(BoardSerializer::load(file, loaded_cells));
 
     // Check the dimensions by reading the file line by line

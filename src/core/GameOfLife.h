@@ -13,7 +13,7 @@
 #define GAMEOFLIFE_H
 
 #include "Point.h"
-#include <set>
+#include <unordered_set>
 
 class GameController;
 class GameTest;
@@ -37,7 +37,7 @@ public:
      * @brief Gets a constant reference to the set of currently alive cells.
      * @return A const reference to the set of Points representing live cells.
      */
-    inline const std::set<Point>& getAliveCells() const noexcept { return aliveCells; }
+    inline const std::unordered_set<Point>& getAliveCells() const noexcept { return aliveCells; }
 
 private:
     /**
@@ -48,7 +48,7 @@ private:
      */
     void nextGeneration();
 
-    std::set<Point> aliveCells;
+    std::unordered_set<Point> aliveCells;
 
     static inline size_t MAX_ALIVE_CELLS = 2'000'000;
 };
