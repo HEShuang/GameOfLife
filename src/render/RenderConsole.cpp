@@ -3,6 +3,7 @@
 #include "core/GameOfLife.h"
 
 #include <iostream>
+#include <iomanip>
 
 #ifdef _WIN32 //works on 32-bit and 64-bit
 #include <windows.h>
@@ -56,7 +57,13 @@ void RenderConsole::render(const std::unique_ptr<GameOfLife>& upGame) {
     const auto& aliveCells = upGame->getAliveCells();
     BBox bbox;
     bbox.compute(aliveCells);
-    m_outStream << "Population:" << aliveCells.size() << " Territory:" << bbox.width << "x" << bbox.height << "\n\n";
+    m_outStream << "Population:"
+                << std::left << std::setw(7) << aliveCells.size()
+                << " Territory:"
+                << std::right << std::setw(5) << bbox.width
+                << "x"
+                << std::left << std::setw(5) << bbox.height
+                << "\n\n";
 
     std::string frame_buffer;
     frame_buffer.reserve((m_viewBox.maxX - m_viewBox.minX + 1) * (m_viewBox.maxY - m_viewBox.minY + 1));
