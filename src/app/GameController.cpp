@@ -204,13 +204,13 @@ bool GameController::parseArguments() {
 }
 
 void GameController::printManual() const {
-    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> [--iterations <number>] [--all] [--sleep <time>] \n"
+    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> [--iterations <number>] [--all] [--sleep <time>] [--maxPopulation <number>]\n"
               << "Parameters:\n"
-              << "  --input <filepath>    : Mandatory. Path to the initial board file.\n"
-              << "  --iterations <number> : Default 100. A positive integer for the number of iterations.\n"
-              << "  --all                 : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n"
-              << "  --sleep               : Default 0. A positive integer in millisecond for sleep time between print of two generation\n"
-              << "  --maxPopulation       : Defualt is 2 million. A positive integer for population limit\n\n";
+              << "  --input <filepath>      : Mandatory. Path to the initial board file.\n"
+              << "  --iterations <number>   : Default 100. A positive integer for the number of iterations.\n"
+              << "  --all                   : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n"
+              << "  --sleep <time>          : Default 0. A positive integer in millisecond for sleep time between print of two generation\n"
+              << "  --maxPopulation <number>: Defualt is 2 million. A positive integer for population limit\n\n";
 
 }
 
