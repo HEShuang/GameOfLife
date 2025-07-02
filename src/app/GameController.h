@@ -37,6 +37,7 @@ public:
      * --iterations : (Default: 100) The number of generations to simulate.
      * --all: (Optional) If present, render every generation state to the console.
      * --sleep: (Optional, default: 0) The sleep time between rendering two generations, for controlling animation speed.
+     * --maxPopulation: (Optional, default is defined in GameOfLife) The limit of population.
      *
      * @param renderer A unique_ptr to a renderer implementation. Defaults to RenderConsole.
      */
@@ -62,6 +63,7 @@ private:
     bool m_bPrintAll = false;
     std::unique_ptr<RenderInterface> m_renderer = nullptr;
     int m_msSleep = 0; //sleep time between each render in milliseconds
+    size_t m_maxPopulation = 0; //0 means do not override the setting inside the game
 };
 
 #endif // GAMECONTROLLER_H
