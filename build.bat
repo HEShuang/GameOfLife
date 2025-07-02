@@ -61,7 +61,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 ECHO.
-ECHO Build complete! Executables can be found in the '%BUILD_FOLDER%\bin\%BUILD_TYPE%' directory.
+ECHO Build complete! Executables can be found in the '%BUILD_FOLDER%\bin' directory.
 
 endlocal
 exit /B 0 REM exit script without closing the terminal
