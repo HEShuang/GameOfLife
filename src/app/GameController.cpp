@@ -1,5 +1,6 @@
 #include "GameController.h"
 #include "core/GameOfLife.h"
+#include "core/Exceptions.h"
 #include "io/BoardSerializer.h"
 
 #include <iostream>
@@ -58,11 +59,13 @@ int GameController::run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
     }
 
+    int i = 0;
+
     //Start profiling
     auto startTime = std::chrono::high_resolution_clock::now();
     //Launch game
     try {
-        for(int i = 0; i < m_nIterations; ++i) {
+        for(; i < m_nIterations; ++i) {
             upGame->nextGeneration();
             if (m_bPrintAll) {
                 m_renderer->clear();
@@ -71,6 +74,8 @@ int GameController::run() {
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
             }
         }
+    } catch (const CapacityException& e) {
+        std::cout << "CapacityException: " << e.what() << std::endl;
     } catch (std::exception& e) {
         std::cout << "Error during generation: " << e.what() << std::endl;
         return 1;
@@ -80,7 +85,7 @@ int GameController::run() {
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
     if (!m_bPrintAll) {
-        std::cout << "---Final state (Generation " << m_nIterations << ")----\n";
+        std::cout << "---Last state (Generation " << i + 1 << ")----\n";
         m_renderer->render(upGame);
     }
 
