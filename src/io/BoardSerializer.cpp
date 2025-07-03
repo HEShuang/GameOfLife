@@ -6,8 +6,9 @@
 #include <map>
 #include <iomanip>    // For std::setprecision
 #include <algorithm>  // For std::transform
+#include <cctype>     // For std::tolower
 
-bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCells) {
+bool BoardSerializer::load(const std::string& sInFile, std::unordered_set<Point>& aliveCells) {
 
     std::ifstream inFile(sInFile);
     if (!inFile.is_open()) {
@@ -56,7 +57,7 @@ bool BoardSerializer::load(const std::string& sInFile, std::set<Point>& aliveCel
     return true;
 }
 
-bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& aliveCells) {
+bool BoardSerializer::save(const std::string& sOutFile, const std::unordered_set<Point>& aliveCells) {
 
     if (aliveCells.empty()) {
         std::ofstream outFile(sOutFile);
@@ -113,7 +114,9 @@ bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& a
 
             std::string userInput;
             std::cin >> userInput;
-            std::transform(userInput.begin(), userInput.end(), userInput.begin(), ::tolower);
+            std::transform(userInput.begin(), userInput.end(), userInput.begin(), [](unsigned char c){
+                return std::tolower(c);
+            });
 
             if (userInput == "y" || userInput == "yes") {
                 std::cout << "User confirmed. Saving full dense file..." << std::endl;
@@ -135,7 +138,7 @@ bool BoardSerializer::save(const std::string& sOutFile, const std::set<Point>& a
 
 // --- Private  ---
 
-bool BoardSerializer::saveDense(const std::string& sOutFile, const std::set<Point>& aliveCells, const BBox& bbox) {
+bool BoardSerializer::saveDense(const std::string& sOutFile, const std::unordered_set<Point>& aliveCells, const BBox& bbox) {
     std::ofstream outFile(sOutFile);
     if (!outFile) {
         std::cerr << "Error: Could not open file for writing: " << sOutFile << std::endl;
@@ -156,7 +159,7 @@ bool BoardSerializer::saveDense(const std::string& sOutFile, const std::set<Poin
     return outFile.good();
 }
 
-bool BoardSerializer::saveSparse(const std::string& sOutFile, const std::set<Point>& aliveCells) {
+bool BoardSerializer::saveSparse(const std::string& sOutFile, const std::unordered_set<Point>& aliveCells) {
     std::ofstream outFile(sOutFile);
     if (!outFile) {
         std::cerr << "Error: Could not open file for writing: " << sOutFile << std::endl;
@@ -171,7 +174,7 @@ bool BoardSerializer::saveSparse(const std::string& sOutFile, const std::set<Poi
 }
 
 //Grid binning to find the densest region center
-Point BoardSerializer::findDensestRegionCenter(const std::set<Point>& aliveCells) {
+Point BoardSerializer::findDensestRegionCenter(const std::unordered_set<Point>& aliveCells) {
     if (aliveCells.empty()) {
         return {0, 0};
     }

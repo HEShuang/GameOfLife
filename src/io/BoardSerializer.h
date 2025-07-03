@@ -13,7 +13,7 @@
 #include "core/Point.h"
 #include "core/BBox.h"
 #include <string>
-#include <set>
+#include <unordered_set>
 
 class BenchMark;
 
@@ -34,7 +34,7 @@ public:
      * @param[out] aliveCells The set to be populated with the coordinates of live cells.
      * @return True if loading was successful, false otherwise.
      */
-    static bool load(const std::string& sInFile, std::set<Point>& aliveCells);
+    static bool load(const std::string& sInFile, std::unordered_set<Point>& aliveCells);
 
     /**
      * @brief Saves the board state with a smart strategy based on pattern size.
@@ -46,7 +46,7 @@ public:
      * @param aliveCells The set of live cell coordinates to save.
      * @return True if saving was successful, false otherwise.
      */
-    static bool save(const std::string& sOutFile, const std::set<Point>& aliveCells);
+    static bool save(const std::string& sOutFile, const std::unordered_set<Point>& aliveCells);
 
 private:
     // --- Constants for the save strategy ---
@@ -55,12 +55,12 @@ private:
     static const int VIEWPORT_HEIGHT = 100; // Height of the centered viewport
 
     // Saves cells to a file in the dense (*_) format within a given bounding box.
-    static bool saveDense(const std::string& sOutFile, const std::set<Point>& aliveCells, const BBox& bbox);
+    static bool saveDense(const std::string& sOutFile, const std::unordered_set<Point>& aliveCells, const BBox& bbox);
 
     // Saves cells to a file in a sparse (x,y coordinate list) format.
-    static bool saveSparse(const std::string& sOutFile, const std::set<Point>& aliveCells);
+    static bool saveSparse(const std::string& sOutFile, const std::unordered_set<Point>& aliveCells);
 
-    static Point findDensestRegionCenter(const std::set<Point>& aliveCells);
+    static Point findDensestRegionCenter(const std::unordered_set<Point>& aliveCells);
 };
 
 #endif // BOARDSERIALIZER_H

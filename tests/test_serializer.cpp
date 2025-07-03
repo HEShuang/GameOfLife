@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "io/BoardSerializer.h"
 #include "core/Point.h"
-#include <set>
+#include <unordered_set>
 #include <fstream>
 #include <string>
 
@@ -14,10 +14,10 @@ TEST(BoardSerializerTest, LoadValidFile) {
     const std::string filename = "test_load_valid.txt";
     createTestFile(filename, "_*\n*_\n");
 
-    std::set<Point> aliveCells;
+    std::unordered_set<Point> aliveCells;
     ASSERT_TRUE(BoardSerializer::load(filename, aliveCells));
 
-    std::set<Point> expected = {{1, 0}, {0, 1}};
+    std::unordered_set<Point> expected = {{1, 0}, {0, 1}};
     ASSERT_EQ(aliveCells, expected);
 
     std::remove(filename.c_str());
@@ -27,7 +27,7 @@ TEST(BoardSerializerTest, LoadInvalidCharacter) {
     const std::string filename = "test_load_invalid_char.txt";
     createTestFile(filename, "_X\n*_\n");
 
-    std::set<Point> aliveCells;
+    std::unordered_set<Point> aliveCells;
     ASSERT_FALSE(BoardSerializer::load(filename, aliveCells));
     ASSERT_TRUE(aliveCells.empty());
 
@@ -36,7 +36,7 @@ TEST(BoardSerializerTest, LoadInvalidCharacter) {
 
 TEST(BoardSerializerTest, SaveCorrectOutput) {
     const std::string filename = "test_save_output.txt";
-    std::set<Point> cells = {{0, 0}, {2, 0}, {1, 1}}; // A small 'v' shape
+    std::unordered_set<Point> cells = {{0, 0}, {2, 0}, {1, 1}}; // A small 'v' shape
 
     ASSERT_TRUE(BoardSerializer::save(filename, cells));
 

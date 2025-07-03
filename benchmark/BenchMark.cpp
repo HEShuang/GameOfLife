@@ -22,7 +22,7 @@ void BenchMark::populationCapacity() {
         int dimension = static_cast<int>(sqrt(static_cast<double>(nPopulation) * 2.0));
         std::mt19937 rng(std::chrono::high_resolution_clock::now().time_since_epoch().count());
         std::uniform_int_distribution<int> distrib(-dimension / 2, dimension / 2);
-        std::set<Point> aliveCells;
+        std::unordered_set<Point> aliveCells;
         while (aliveCells.size() < nPopulation) {
             aliveCells.insert({distrib(rng), distrib(rng)});
         }
@@ -31,7 +31,7 @@ void BenchMark::populationCapacity() {
 
     // Define the different population sizes to test
     const std::vector<size_t> populationTargets = {
-        100000, 250000, 500000, 750000, 1000000, 1250000, 1500000
+        100'000, 500'000, 1'000'000, 1'250'000, 1'500'000, 1'750'000, 2'000'000
     };
 
     const int nSamples = 1;
@@ -76,7 +76,7 @@ void BenchMark::populationCapacity() {
 
 void BenchMark::boardCapacity() {
 
-    auto populateBoardCorners = [](int dimension) -> std::set<Point> {
+    auto populateBoardCorners = [](int dimension) -> std::unordered_set<Point> {
         if (dimension <= 0) return {};
         int d = dimension - 1;
         return {
@@ -99,7 +99,7 @@ void BenchMark::boardCapacity() {
 
     for (const auto& dim : dimensionTargets) {
         // Create the cell set that defines the bounding box.
-        std::set<Point> aliveCells = populateBoardCorners(dim);
+        std::unordered_set<Point> aliveCells = populateBoardCorners(dim);
         BBox bbox;
         bbox.compute(aliveCells);
 

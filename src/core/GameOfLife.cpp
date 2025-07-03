@@ -1,10 +1,11 @@
 #include "GameOfLife.h"
 #include "Exceptions.h"
+#include <string>
 
 void GameOfLife::nextGeneration() {
 
     if (aliveCells.size() > MAX_ALIVE_CELLS) {
-        throw CapacityException("Maximum cell capacity exceeded.");
+        throw CapacityException("Exceeded maximum cell limit: " + std::to_string(MAX_ALIVE_CELLS));
     }
 
     //Count living neighbors of the given cell by iterating the 3x3 grid around
@@ -27,7 +28,7 @@ void GameOfLife::nextGeneration() {
 
     //Candidates to check living neighbors
     //A candicate for next generation is any currently live cell or any of its direct neighbors
-    std::set<Point> candidates;
+    std::unordered_set<Point> candidates;
     for (const auto& cell : aliveCells) {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
@@ -36,7 +37,7 @@ void GameOfLife::nextGeneration() {
         }
     }
 
-    std::set<Point> nextAliveCells;
+    std::unordered_set<Point> nextAliveCells;
     for (const auto& cell: candidates) {
         int nLiveNB = countLiveNeighbors(cell);
         if (aliveCells.count(cell)) { //Rule 1: Any live cell with 2 or 3 live neighbors survives.

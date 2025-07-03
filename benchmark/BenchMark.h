@@ -4,16 +4,16 @@
 #include "core/Point.h"
 #include "core/GameOfLife.h"
 
-#include <set>
+#include <unordered_set>
 
 class GameBenchmark {
 
 public:
-    void setState(const std::set<Point>& cells) {
+    void setState(const std::unordered_set<Point>& cells) {
         game.aliveCells = cells;
     }
 
-    const std::set<Point>& getState() const {
+    const std::unordered_set<Point>& getState() const {
         return game.aliveCells;
     }
 

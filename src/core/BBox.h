@@ -10,8 +10,8 @@
 #define BBOX_H
 
 #include "Point.h"
-#include <set>
-#include <ostream>
+#include <iostream>
+#include <limits>
 
 /**
  * @struct BBox
@@ -32,13 +32,43 @@ struct BBox {
      * @param min The Point defining the top-left corner.
      * @param max The Point defining the bottom-right corner.
      */
-    BBox(Point&& min, Point&& max);
+    BBox(Point&& min, Point&& max): minX(min.x), minY(min.y), maxX(max.x), maxY(max.y) {
+        center = {minX + (maxX - minX) / 2, minY + (maxY - minY) / 2};
+        width = maxX - minX + 1;
+        height = maxY - minY + 1;
+    }
 
     /**
-     * @brief Computes the minimal bounding box that encloses a set of points.
-     * @param points The set of points to enclose.
+     * @brief Template function that computes the minimal bounding box of input points.
+     * @param points The containter of points
      */
-    void compute(const std::set<Point>& points);
+    template <typename Container>
+    void compute(const Container& points) {
+        if (points.empty()) {
+            // Handle the case of an empty container
+            minX = minY = maxX = maxY = 0;
+            width = height = 0;
+            center = {0, 0};
+            return;
+        }
+
+        // Initialize bounds to opposite extremes
+        minX = std::numeric_limits<int>::max();
+        minY = std::numeric_limits<int>::max();
+        maxX = std::numeric_limits<int>::min();
+        maxY = std::numeric_limits<int>::min();
+
+        for (const Point& p : points) {
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
+        }
+
+        width = maxX - minX;
+        height = maxY - minY;
+        center = {minX + width / 2, minY + height / 2};
+    }
 };
 
 /**
@@ -47,6 +77,9 @@ struct BBox {
  * @param bbox The BBox object to print.
  * @return A reference to the output stream.
  */
-std::ostream& operator<< (std::ostream& os, const BBox& bbox);
+inline std::ostream& operator<<(std::ostream& os, const BBox& bbox) {
+    os << "BBox: (" << bbox.minX << ", " << bbox.minY << "), (" << bbox.maxX << ", " << bbox.maxY << ")\n";
+    return os;
+}
 
 #endif // BBOX_H

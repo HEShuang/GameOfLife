@@ -1,5 +1,6 @@
 #include "GameController.h"
 #include "core/GameOfLife.h"
+#include "core/Exceptions.h"
 #include "io/BoardSerializer.h"
 
 #include <iostream>
@@ -43,6 +44,11 @@ int GameController::run() {
         return 1;
     }
 
+    //Set MAX_ALIVE_CELLS of game
+    if (m_maxPopulation > 0) {
+        GameOfLife::MAX_ALIVE_CELLS = m_maxPopulation;
+    }
+
     //Init render view based on terminal size
     m_renderer->initView(upGame);
 
@@ -53,11 +59,13 @@ int GameController::run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
     }
 
+    int i = 0;
+
     //Start profiling
     auto startTime = std::chrono::high_resolution_clock::now();
     //Launch game
     try {
-        for(int i = 0; i < m_nIterations; ++i) {
+        for(; i < m_nIterations; ++i) {
             upGame->nextGeneration();
             if (m_bPrintAll) {
                 m_renderer->clear();
@@ -66,8 +74,10 @@ int GameController::run() {
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_msSleep));
             }
         }
+    } catch (const CapacityException& e) {
+        std::cout << "CapacityException: " << e.what() << std::endl;
     } catch (std::exception& e) {
-        std::cout << "Error during generation" << e.what() << std::endl;
+        std::cout << "Error during generation: " << e.what() << std::endl;
         return 1;
     }
 
@@ -75,7 +85,7 @@ int GameController::run() {
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
     if (!m_bPrintAll) {
-        std::cout << "---Final state (Generation " << m_nIterations << ")----\n";
+        std::cout << "---Last state (Generation " << i + 1 << ")----\n";
         m_renderer->render(upGame);
     }
 
@@ -162,6 +172,29 @@ bool GameController::parseArguments() {
             }
         }
 
+        else if (arg == "--maxPopulation") {
+
+            if (i + 1 < nArgs) {
+                try {
+                    m_maxPopulation = std::stoi(m_args[++i]);
+                    if (m_maxPopulation < 0) {
+                        std::cerr << "Error: --maxPopulation value must >= 0.\n";
+                        return false;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Error: --maxPopulation value must be an integer.\n";
+                    return false;
+                } catch (const std::out_of_range& e) {
+                    std::cerr << "Error: --maxPopulation value is out of range.\n";
+                    return false;
+                }
+            }
+            else {
+                std::cerr << "Error: --maxPopulation requires a number.\n";
+                return false;
+            }
+        }
+
         else {
             std::cerr << "Error: Unknown argument '" << arg << "'\n";
             return false;
@@ -171,12 +204,13 @@ bool GameController::parseArguments() {
 }
 
 void GameController::printManual() const {
-    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> [--iterations <number>] [--all] [--sleep <time>] \n"
+    std::cerr << "\nUsage: " << m_sProgName << " --input <filepath> [--iterations <number>] [--all] [--sleep <time>] [--maxPopulation <number>]\n"
               << "Parameters:\n"
-              << "  --input <filepath>    : Mandatory. Path to the initial board file.\n"
-              << "  --iterations <number> : Default 100. A positive integer for the number of iterations.\n"
-              << "  --all                 : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n"
-              << "  --sleep               : Default 0. A positive integer in millisecond for sleep time between print of two generation\n\n";
+              << "  --input <filepath>      : Mandatory. Path to the initial board file.\n"
+              << "  --iterations <number>   : Default 100. A positive integer for the number of iterations.\n"
+              << "  --all                   : Optional. If present, all iterations are printed. Otherwise, only the last one is printed\n"
+              << "  --sleep <time>          : Default 0. A positive integer in millisecond for sleep time between print of two generation\n"
+              << "  --maxPopulation <number>: Defualt is 2 million. A positive integer for population limit\n\n";
 
 }
 

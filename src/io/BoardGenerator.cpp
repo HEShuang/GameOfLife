@@ -5,7 +5,7 @@
 #include "core/Point.h"
 
 #include <random>
-#include <set>
+#include <unordered_set>
 
 bool BoardGenerator::generateRandom(const std::string& sOutFile, const BBox& bbox, float aliveChance) {
 
@@ -13,7 +13,7 @@ bool BoardGenerator::generateRandom(const std::string& sOutFile, const BBox& bbo
     std::mt19937 gen(std::random_device{}());
     std::bernoulli_distribution distribution(aliveChance);
 
-    std::set<Point> aliveCells;
+    std::unordered_set<Point> aliveCells;
 
     for (int y = bbox.minY; y <= bbox.maxY; ++y) {
         for (int x = bbox.minX; x <= bbox.maxX; ++x) {
