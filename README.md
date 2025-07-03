@@ -60,7 +60,7 @@ GameOfLife --input <filepath> --iterations <number> [--all]
 ```
 **Example:**
 ```bash
-./build/bin/GameOfLife --input samples/glider.txt --iterations 300 --all
+./build/bin/GameOfLife --input ./samples/glider.txt --iterations 300 --all --sleep 50
 ```
 This will run 300 generations with animation and save the final state to file glider_300.txt.
 
@@ -68,7 +68,8 @@ This will run 300 generations with animation and save the final state to file gl
 * --input <filepath>: (Required) Path to a board file. The format should use * for live cells and _ for dead cells.
 * --iterations <number>: (Default: 100) The number of generations to simulate.
 * --all: (Optional) If present, prints every generation to the console.
-* --sleep: (Default:0) A positive integer in millisecond for sleep time between print of two generations.
+* --sleep <time>: (Default:0) A positive integer in millisecond for sleep time between print of two generations.
+* --maxPopultation <number>: (Default:2 millions) A positive integer for population limit.
 
 ## 4. Advanced Building & Testing
 ### `Custom Build Options`
