@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <unordered_set>
 #include "core/GameOfLife.h"
 #include "core/Point.h"
 

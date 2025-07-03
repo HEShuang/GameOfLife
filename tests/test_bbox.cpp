@@ -28,10 +28,8 @@ TEST(BBoxTest, SinglePoint) {
 TEST(BBoxTest, EmptySet) {
     std::set<Point> cells;
     BBox bbox;
-    // The compute function should handle this gracefully (e.g., by doing nothing or resetting to zero).
-    // Let's assume it resets to default values.
     bbox.compute(cells);
 
-    ASSERT_EQ(bbox.minX, 0); // Or whatever you define as the default
+    ASSERT_EQ(bbox.minX, 0);
     ASSERT_EQ(bbox.minY, 0);
 }
