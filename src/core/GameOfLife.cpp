@@ -1,5 +1,6 @@
 #include "GameOfLife.h"
 #include "Exceptions.h"
+#include <string>
 
 void GameOfLife::nextGeneration() {
 
