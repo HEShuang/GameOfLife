@@ -29,14 +29,22 @@ struct Point {
     }
 };
 
-// Hash function specialization in the std namespace
+// A helper template function to combine hashes, mimicking boost::hash_combine
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& v) {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 namespace std {
 template <>
 struct hash<Point> {
     std::size_t operator()(const Point& p) const noexcept {
-        auto h1 = std::hash<int>()(p.x);
-        auto h2 = std::hash<int>()(p.y);
-        return h1 ^ (h2 << 1); // Combine hashes
+        // Start with a seed of 0, then combine x and y into seed
+        std::size_t seed = 0;
+        hash_combine(seed, p.x);
+        hash_combine(seed, p.y);
+        return seed;
     }
 };
 }
